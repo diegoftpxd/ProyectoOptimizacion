@@ -1,9 +1,7 @@
 import pandas as pd
 from gurobipy import Model, GRB
 from itertools import product # <- No está en el enunciado pero viene instalada con python. Solo permite hacer más operaciones con los iterables.
-import csv 
-from multiprocessing import Process
-
+import csv
 
 
 
@@ -700,37 +698,6 @@ def ObtenerRestriccionesActivas():
     for restriccion in restricciones_activas:
         print(restriccion.ConstrName)
 
-def CorrerModeloConTerrenos_con_timeout(arg, timeout=1200):
-    # 20 minutos y se corta
-    p = Process(target=CorrerModeloConTerrenos, args=(arg,))
-    p.start()
-    p.join(timeout)
-
-    if p.is_alive():
-        p.terminate()
-        p.join()
-    
-
-def CorrerModeloConPorcentajeAumento_con_timeout(arg, timeout=1200):
-    p = Process(target=CorrerModeloConPorcentajeAumento, args=(arg,))
-    p.start()
-    p.join(timeout)
-
-    if p.is_alive():
-        p.terminate()
-        p.join()
-
-
-def CorrerModeloConPresupuesto_con_timeout(arg, timeout=1200): 
-    p = Process(target=CorrerModeloConPresupuesto, args=(arg,))
-    p.start()
-    p.join(timeout)
-
-    if p.is_alive():
-        p.terminate()
-        p.join()
-
-
 
 
 
@@ -738,37 +705,40 @@ def CorrerModeloConPresupuesto_con_timeout(arg, timeout=1200):
 
 if __name__ == "__main__":
     CorrerModelo()
-    #CorrerModeloConTerrenos_con_timeout(0.5)
-    #CorrerModeloConTerrenos_con_timeout(0.75)
-    #CorrerModeloConTerrenos_con_timeout(0.8)
-    #CorrerModeloConTerrenos_con_timeout(0.85)
-    #CorrerModeloConTerrenos_con_timeout(0.9)
-    #CorrerModeloConTerrenos_con_timeout(0.95)
-    #CorrerModeloConTerrenos_con_timeout(1.05)
-    #CorrerModeloConTerrenos_con_timeout(1.1)
-    #CorrerModeloConTerrenos_con_timeout(1.2)
-    #CorrerModeloConTerrenos_con_timeout(1.3)
-    #CorrerModeloConTerrenos_con_timeout(1.25)
-    #CorrerModeloConTerrenos_con_timeout(1.5)
-
-    #CorrerModeloConPresupuesto_con_timeout(0.5)
-    #CorrerModeloConPresupuesto_con_timeout(0.75)
-    #CorrerModeloConPresupuesto_con_timeout(1.25)
-    #CorrerModeloConPresupuesto_con_timeout(1.5)
-
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.01)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.015)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.02)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.025)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.03)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.35)
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.04) No viable
-    #CorrerModeloConPorcentajeAumento_con_timeout(1.05) No viable
     
-    #CorrerModeloConPresupuesto_con_timeout(0.6)
-    #CorrerModeloConPresupuesto_con_timeout(0.8)
-    #CorrerModeloConPresupuesto_con_timeout(0.9)
-    #CorrerModeloConPresupuesto_con_timeout(1.1)
+    # Análisis de sensibilidad
+    
+    #CorrerModeloConTerrenos(0.5)
+    #CorrerModeloConTerrenos(0.75)
+    #CorrerModeloConTerrenos(0.8)
+    #CorrerModeloConTerrenos(0.85)
+    #CorrerModeloConTerrenos(0.9)
+    #CorrerModeloConTerrenos(0.95)
+    #CorrerModeloConTerrenos(1.05)
+    #CorrerModeloConTerrenos(1.1)
+    #CorrerModeloConTerrenos(1.2)
+    #CorrerModeloConTerrenos(1.3)
+    #CorrerModeloConTerrenos(1.25)
+    #CorrerModeloConTerrenos(1.5)
+    #
+    #CorrerModeloConPresupuesto(0.5)
+    #CorrerModeloConPresupuesto(0.75)
+    #CorrerModeloConPresupuesto(1.25)
+    #CorrerModeloConPresupuesto(1.5)
+    #
+    #CorrerModeloConPorcentajeAumento(1.01)
+    #CorrerModeloConPorcentajeAumento(1.015)
+    #CorrerModeloConPorcentajeAumento(1.02)
+    #CorrerModeloConPorcentajeAumento(1.025)
+    #CorrerModeloConPorcentajeAumento(1.03)
+    #CorrerModeloConPorcentajeAumento(1.35)
+    #CorrerModeloConPorcentajeAumento(1.04) #No viable
+    #CorrerModeloConPorcentajeAumento(1.05) #No viable
+    #
+    #CorrerModeloConPresupuesto(0.6)
+    #CorrerModeloConPresupuesto(0.8)
+    #CorrerModeloConPresupuesto(0.9)
+    #CorrerModeloConPresupuesto(1.1)
 
 
 
