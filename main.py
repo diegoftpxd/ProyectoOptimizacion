@@ -2,16 +2,15 @@ import pandas as pd
 from gurobipy import Model, GRB
 from itertools import product # <- No está en el enunciado pero viene instalada con python. Solo permite hacer más operaciones con los iterables.
 import csv
-
-
+from datos import *
 
 # TODO: Cambiar valores de presupuesto y tamaño de terreno.
 
 def CorrerModelo(guardarEnArchivo:bool = True,
                 nombre_archivo = "Resultados_completos",
-                presupuesto = 450_000_000,
-                aumentoAnualDemanda = 1.0339,
-                tamañoTerreno=500_000,
+                presupuesto = parametros_generales["apresupuesto"],
+                aumentoAnualDemanda = 1 + parametros_generales["d%Aumento"],
+                tamañoTerreno= ubicaciones[0]["t_area_k"],
                 funcionObjetivo = True,
                 imprimirModelo = True
                 ) -> Model:
@@ -53,84 +52,68 @@ def CorrerModelo(guardarEnArchivo:bool = True,
 
     class SolarPequeña:
         def __init__(self):
-            self.precioInstalacion = 941 * 100 # Precio por Kw instalado * Capacidad maxima
-            self.emisionCO2 = 40 * (1_327_000//1000)# (Kg CO2/kWh) * KWh producido
-            self.espacioUtilizado = 1000
-            self.distanciaMinimaAHogar = 0 # No se necesita distancia mínima
-            self.produccionEnergiaPorTerreno = [1_327_000, 1_327_000]  # Un valor por cada terreno
-            self.MinimoDeAlmacenamientoDeBaterias = 0.6 # Valor real
-            self.vidaUtil = 30 # Valor real
-    
-    class SolarPequeña:
-        def __init__(self):
-            self.precioInstalacion = 941 * 100 # Precio por Kw instalado * Capacidad maxima
-            self.emisionCO2 = 40 * (1_327_000//1000)# (Kg CO2/kWh) * KWh producido
-            self.espacioUtilizado = 1000
-            self.distanciaMinimaAHogar = 0 # No se necesita distancia mínima
-            self.produccionEnergiaPorTerreno = [1_327_000, 1_327_000]  # Un valor por cada terreno
-            self.MinimoDeAlmacenamientoDeBaterias = 0.6 # Valor real
-            self.vidaUtil = 30 # Valor real
-
-            self.precioPorKW = 941
-            self.capacidadProduccion = 100
-            self.emisionesPorKwh = 40
-
-            self.precioInstalacion = 941 * 100
+            self.precioInstalacion = tecnologias[0]["p_j"]
+            self.emisionCO2 = tecnologias[0]["c_j"]
+            self.espacioUtilizado = tecnologias[0]["e_j"]
+            self.distanciaMinimaAHogar = tecnologias[0]["vdis_j"]
+            self.produccionEnergiaPorTerreno = [produccion_energia[0][0], produccion_energia[0][1]]
+            self.MinimoDeAlmacenamientoDeBaterias = tecnologias[0]["v%guardar_j"]
+            self.vidaUtil = tecnologias[0]["hvida_j"]
 
     class SolarGrande:
         def __init__(self):
-            self.precioInstalacion = 771 * 3000 # Precio por Kw instalado * Capacidad maxima
-            self.emisionCO2 = 40 * 13_271_000//1000 #(Kg CO2/kWh) * KWh producido
-            self.espacioUtilizado = 106_700
-            self.distanciaMinimaAHogar = 0 # No se necesita distancia mínima
-            self.produccionEnergiaPorTerreno = [13_271_000, 39_814_000]
-            self.MinimoDeAlmacenamientoDeBaterias = 0.5 # Valor real
-            self.vidaUtil = 30 # Valor real
+            self.precioInstalacion = tecnologias[1]["p_j"] 
+            self.emisionCO2 = tecnologias[1]["c_j"] 
+            self.espacioUtilizado = tecnologias[1]["e_j"] 
+            self.distanciaMinimaAHogar = tecnologias[1]["vdis_j"] 
+            self.produccionEnergiaPorTerreno = [produccion_energia[1][0], produccion_energia[1][1]] 
+            self.MinimoDeAlmacenamientoDeBaterias = tecnologias[1]["v%guardar_j"] 
+            self.vidaUtil = tecnologias[1]["hvida_j"] 
+
 
     class EolicaPequeña:
         def __init__(self):
-            self.precioInstalacion = 1222 * 1500 # Precio por Kw instalado * Capacidad maxima
-            self.emisionCO2 = 5.3 * 3_500_000//1000 #(Kg CO2/kWh) * KWh producido
-            self.espacioUtilizado = 162_000 # Valor real
-            self.distanciaMinimaAHogar = 500 
-            self.produccionEnergiaPorTerreno = [3_500_000, 2_750_000]
-            self.MinimoDeAlmacenamientoDeBaterias = 0.5 # Valor real
-            self.vidaUtil = 30 # Valor real
+            self.precioInstalacion = tecnologias[2]["p_j"] 
+            self.emisionCO2 = tecnologias[2]["c_j"] 
+            self.espacioUtilizado = tecnologias[2]["e_j"] 
+            self.distanciaMinimaAHogar = tecnologias[2]["vdis_j"] 
+            self.produccionEnergiaPorTerreno = [produccion_energia[2][0], produccion_energia[2][1]] 
+            self.MinimoDeAlmacenamientoDeBaterias = tecnologias[2]["v%guardar_j"] 
+            self.vidaUtil = tecnologias[2]["hvida_j"] 
 
     class EolicaGrande:
         def __init__(self):
-            self.precioInstalacion = 1494 * 5000 # Precio por Kw instalado * Capacidad maxima
-            self.emisionCO2 = 5.3 * 17_000_000//1000 #gCO2/kWh * KWh producido
-            self.espacioUtilizado = 25_250 # Valor real
-            self.distanciaMinimaAHogar = 500 
-            self.produccionEnergiaPorTerreno = [17_000_000, 13_500_000]
-            self.MinimoDeAlmacenamientoDeBaterias = 0.4 # Valor real
-            self.vidaUtil = 25 # Valor real
+            self.precioInstalacion = tecnologias[3]["p_j"] 
+            self.emisionCO2 = tecnologias[3]["c_j"] 
+            self.espacioUtilizado = tecnologias[3]["e_j"] 
+            self.distanciaMinimaAHogar = tecnologias[3]["vdis_j"] 
+            self.produccionEnergiaPorTerreno = [produccion_energia[3][0], produccion_energia[3][1]] 
+            self.MinimoDeAlmacenamientoDeBaterias = tecnologias[3]["v%guardar_j"] 
+            self.vidaUtil = tecnologias[3]["hvida_j"] 
 
     class BateriaLitio:
         def __init__(self):
-            self.precioInstalacion = 1556  # Valor real
-            self.emisionCO2 = 168_000    #kwCO2/kWh
-            self.espacioUtilizado = 0.3
-            self.capacidadMaximaAlmacenada = 230 # Valor real
-            self.vidaUtil = 20  # Valor real
+            self.precioInstalacion = tecnologias[4]["p_j"] 
+            self.emisionCO2 = tecnologias[4]["c_j"] 
+            self.espacioUtilizado = tecnologias[4]["e_j"] 
+            self.capacidadMaximaAlmacenada = tecnologias[4]["b_j"]
+            self.vidaUtil = tecnologias[4]["hvida_j"]  
 
     class BateriaPlomoAcido:
         def __init__(self):
-            self.precioInstalacion = 1100  # Valor real
-            self.emisionCO2 = 175_000 * 1.2#kwCO2/kWh
-            self.espacioUtilizado = 5.74
-            self.capacidadMaximaAlmacenada = 1.2 # Valor real
-            self.vidaUtil = 15 # Valor real
+            self.precioInstalacion = tecnologias[5]["p_j"] 
+            self.emisionCO2 = tecnologias[5]["c_j"] 
+            self.espacioUtilizado = tecnologias[5]["e_j"]
+            self.capacidadMaximaAlmacenada = tecnologias[5]["b_j"]
+            self.vidaUtil = tecnologias[5]["hvida_j"]
 
     class BateriaFlujo:
         def __init__(self):
-            self.precioInstalacion = 1700   # Valor real
-            self.emisionCO2 = 183_000 * 800 # kwCO2/kWh
-            self.espacioUtilizado = 13.74
-            self.capacidadMaximaAlmacenada = 800 # Valor real
-            self.vidaUtil = 20 # Valor real
-
+            self.precioInstalacion = tecnologias[6]["p_j"]
+            self.emisionCO2 = tecnologias[6]["c_j"]
+            self.espacioUtilizado = tecnologias[6]["e_j"] 
+            self.capacidadMaximaAlmacenada = tecnologias[6]["b_j"]
+            self.vidaUtil = tecnologias[6]["hvida_j"]
 
     Infraestructuras : list[SolarPequeña] = [SolarPequeña(), SolarGrande(), EolicaPequeña(), EolicaGrande(), BateriaLitio(), BateriaPlomoAcido(), BateriaFlujo()] 
 
@@ -142,20 +125,19 @@ def CorrerModelo(guardarEnArchivo:bool = True,
 
 
 
-    Terrenos = [Terreno(precioArriendo=3160, tamaño=tamañoTerreno, distanciaAHogar=500), # Poniente
-                Terreno(precioArriendo=2186, tamaño=tamañoTerreno, distanciaAHogar=500)] # Oriente
-
+    Terrenos = [Terreno(precioArriendo= ubicaciones[0]["parriendo_k"], tamaño= ubicaciones[0]["t_area_k"], distanciaAHogar= ubicaciones[0]["t_hogares_k"]), # Poniente
+            Terreno(precioArriendo= ubicaciones[1]["parriendo_k"], tamaño= ubicaciones[1]["t_area_k"], distanciaAHogar= ubicaciones[1]["t_hogares_k"])] # Oriente
 
     class Simulacion:
         def __init__(self):
             # 7 días de simulación
-            self.demandaSimulada = [481_442.96, 449_786.83, 421_593.05, 421_593.05, 481_442.96, 421_593.05, 421_593.05] # Nublado, Parcialmente nublado, Soleado, Parcialemente Nublado, Nublado, Soleado, Soleado
+            self.demandaSimulada = [dias_semana[z]["alpha_z"] for z in range(7)] # Nublado, Parcialmente nublado, Soleado, Parcialemente Nublado, Nublado, Soleado, Soleado
             # Matriz 7x7 (infraestructuras x días)
             self.disminucionProduccion = [
-                [0.3325, 0.762, 1.0, 0.762, 0.3325, 1.0, 1.0],  # 0: Solar pequeña
-                [0.3325, 0.762, 1.0, 0.762, 0.3325, 1.0, 1.0], # 1: Solar grande
-                [0.3, 0.6, 1.0, 0.6, 0.3, 1.0, 1.0],    # 2: Eólica pequeña
-                [0.55, 0.8, 1.0, 0.8, 0.55, 1.0, 1.0], # 3: Eólica grande
+                [eficiencia_climatica[0]["Viento bajo/Nublado"], eficiencia_climatica[0]["Viento medio/Parcialmente nublado"], eficiencia_climatica[0]["Mucho viento/Soleado"], eficiencia_climatica[0]["Viento medio/Parcialmente nublado"], eficiencia_climatica[0]["Viento bajo/Nublado"], eficiencia_climatica[0]["Mucho viento/Soleado"], eficiencia_climatica[0]["Mucho viento/Soleado"]],  # 0: Solar pequeña
+                [eficiencia_climatica[1]["Viento bajo/Nublado"], eficiencia_climatica[1]["Viento medio/Parcialmente nublado"], eficiencia_climatica[1]["Mucho viento/Soleado"], eficiencia_climatica[1]["Viento medio/Parcialmente nublado"], eficiencia_climatica[1]["Viento bajo/Nublado"], eficiencia_climatica[1]["Mucho viento/Soleado"], eficiencia_climatica[1]["Mucho viento/Soleado"]], # 1: Solar grande
+                [eficiencia_climatica[2]["Viento bajo/Nublado"], eficiencia_climatica[2]["Viento medio/Parcialmente nublado"], eficiencia_climatica[2]["Mucho viento/Soleado"], eficiencia_climatica[2]["Viento medio/Parcialmente nublado"], eficiencia_climatica[2]["Viento bajo/Nublado"], eficiencia_climatica[2]["Mucho viento/Soleado"], eficiencia_climatica[2]["Mucho viento/Soleado"]],    # 2: Eólica pequeña
+                [eficiencia_climatica[3]["Viento bajo/Nublado"], eficiencia_climatica[3]["Viento medio/Parcialmente nublado"], eficiencia_climatica[3]["Mucho viento/Soleado"], eficiencia_climatica[3]["Viento medio/Parcialmente nublado"], eficiencia_climatica[3]["Viento bajo/Nublado"], eficiencia_climatica[3]["Mucho viento/Soleado"], eficiencia_climatica[3]["Mucho viento/Soleado"]], # 3: Eólica grande
                 [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],      # 4: Batería litio
                 [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],      # 5: Batería plomo ácido
                 [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]       # 6: Batería flujo
@@ -164,7 +146,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
     simulacion = Simulacion()
 
 
-    demandaElectricaAñoInicial = 158_314_691 # Parametro real
+    demandaElectricaAñoInicial = parametros_generales["demanda_electrica_año_inicial"] # Parametro real
     aumentoDemandaAnual = aumentoAnualDemanda # Parametro real
     # Costos y emisiones
     p = [i.precioInstalacion for i in Infraestructuras]
@@ -204,7 +186,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
         modelo.setObjective(1,GRB.MINIMIZE)
     # # Restricciones
     # 
-    # 1) # MODIFICADA (CAMBIAR EN EL INFORME)
+    # 1)
 
     for k, j, t in product(K, J, T):
         if t == 0:
@@ -235,7 +217,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             <= t_area[k]
             for k, t in product(K, T)
         ),
-        name="3"
+        name="3)"
     )
     # 4) # Agregue un for k in K porque estamos sumando sobre todos los terrenos y en 
     # la restriccion original no se hacia eso porque la demanda era de la localidad 
@@ -260,7 +242,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
         ),
         name="5)"
     )
-    # 6a) Restricción del Mercado (Obliga a comprar la capacidad de reserva mínima)
+    # 6) Restricción del Mercado (Obliga a comprar la capacidad de reserva mínima)
     # La capacidad de reserva comprada (C_Reserva) debe ser al menos el mínimo requerido.
     modelo.addConstrs(
         (
@@ -268,22 +250,21 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             sum(SProduciendo[k,j,t] * w[j,k] * v_guardada[j] for j in JProductores)/365
             for (k,t) in product(K, T) if t >= 1
         ),
-        name="6a_Reserva_Minima"
+        name="6)"
     )
 
-    # 6b) Restricción Física (La capacidad total debe ser mayor que la reserva)
+    # 7) Restricción Física (La capacidad total debe ser mayor que la reserva)
     # La suma de TODAS las baterías instaladas debe cubrir al menos la Reserva.
     modelo.addConstrs(
         (
             sum(b[j] * SProduciendo[k,j,t] for j in JBaterias) >= C_Reserva[k,t]
             for (k,t) in product(K, T) if t >= 1
         ),
-        name="6b_Capacidad_Cubre_Reserva"
+        name="7)"
     )
 
 
-
-    # 7)
+    # 8)
 
     modelo.addConstrs(
         (
@@ -291,17 +272,17 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             <= M * t_distancia_correcta[k,j]
             for (k,j,t) in product(K, JMolinos, T)
         ),
-        name="7)"
+        name="8)"
     )
-    # 8) 
+    # 9) 
 
     modelo.addConstr(
         sum(U[k,j,t] * p[j] for (k,j,t) in product(K,J,T)) +
         sum(X[k,t] * p_arriendo[k] for (k,t) in product(K,T))
         <= q_presupuesto,
-        name="8)"
+        name="9)"
     )
-    # 9)
+    # 10)
 
     modelo.addConstrs(
         (
@@ -309,7 +290,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             <= sum(SProduciendo[k,j,t] * b[j] for (k,j) in product(K,JBaterias))
             for (t,z) in product(T, Z)
         ),
-        name="9a)"
+        name="10)"
     )
 
     modelo.addConstrs(
@@ -317,7 +298,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             Beta[t,z] >= 0
             for (t,z) in product(T, Z)
         ),
-        name="9b)"
+        name="12)"
     )
 
     modelo.addConstrs(
@@ -330,7 +311,7 @@ def CorrerModelo(guardarEnArchivo:bool = True,
             - Vertimiento[t,z]  # Energía que se tira si la batería está llena
             for (t,z) in product(T, [0,1,2,3,4,5]) if t >= 1
         ),
-        name="10_Balance_Estricto"
+        name="11)"
     )
 
     modelo.addConstrs(
@@ -369,16 +350,13 @@ def CorrerModelo(guardarEnArchivo:bool = True,
         name="13)"
     )
 
-    # Calcula la capacidad total instalada en el año t
-    CapacidadTotal = {
-        t: sum(SProduciendo[k,j,t] * b[j] for k in K for j in JBaterias) 
-        for t in T
-    }
-
-    # Restricción: El nivel de carga nunca baja del 20% de la capacidad instalada
     modelo.addConstrs(
-        (Beta[t,z] >= 0.2 * CapacidadTotal[t] for t in T if t >= 1 for z in Z),
-        name="Minimo_Estado_Carga"
+    (
+        Beta[t,z] >= 0.2 * sum(SProduciendo[k,j,t] * b[j] for k in K for j in JBaterias)
+        for t in T if t >= 1 
+        for z in Z
+    ),
+    name="Minimo_Estado_Carga"
     )
 
     modelo.optimize()
